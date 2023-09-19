@@ -1,0 +1,121 @@
+{
+  "build": {
+    "beforeDevCommand": "npm run dev",
+    "beforeBuildCommand": "npm run build",
+    "devPath": "http://localhost:1420",
+    "distDir": "../dist",
+    "withGlobalTauri": true
+  },
+  "package": {
+    "productName": "skydesk",
+    "version": "1.0.0"
+  },
+  "tauri": {
+    "allowlist": {
+      "all": true, 
+      "shell": {   
+        "all": true,  
+        "open": false,
+        "execute": true,
+        "sidecar": true,
+        "scope": [
+          {
+            "name": "node",
+            "cmd": "node", 
+            "args": [{"validator": "-v"}]
+          },
+          {
+            "name": "tasklist",
+            "cmd": "tasklist"
+          },
+          {
+            "name": "reg", 
+            "cmd": "reg",
+            "args": ["add","HKLM\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run","/v","skydesk","/t","REG_SZ","/d",{"validator": "^"}]
+          }  
+        ]   
+      }, 
+      "window": { 
+        "all": true
+      }, 
+      "globalShortcut": {
+        "all": true 
+      },
+      "dialog": {
+        "all": true 
+      },   
+      "fs":{
+        "all": true, 
+        "scope": ["**"]
+      }, 
+      "path":{   
+        "all": true 
+      },  
+      "clipboard": {
+        "all": true
+      }, 
+      "http": {
+        "all": true, 
+        "request": true,
+        "scope": [
+          "http://**",
+          "https://**"
+        ]
+      },
+      "protocol": {
+        "all": true,
+        "asset": true, 
+        "assetScope":["**"]
+      }
+    },
+    "bundle": { 
+      "targets": ["deb","appimage","nsis","msi","app","dmg","updater"],
+      "active": true,      
+      "icon": [  
+        "icons/folder.png",
+        "icons/folder.ico" 
+      ], 
+      "identifier": "com.tauri.skydesk", 
+      "publisher":"angelbests1314@live.com",
+      "shortDescription":"skydesk",
+      "longDescription": "skydesk",
+      "copyright":"skydesk"
+    }, 
+    "security": {
+      "csp": null
+    }, 
+    "updater": {    
+      "active": false
+    }, 
+    "windows": [ 
+      {
+        "fullscreen": false,
+        "title": "skydesk",
+        "width": 400, 
+        "height": 600,
+        "transparent": true,
+        "decorations": false,
+        "fileDropEnabled": false,
+        "skipTaskbar": false, 
+        "label": "main", 
+        "center": true
+      },
+      {
+        "title":"roulette",
+        "width":200,
+        "height":200,
+        "decorations":false,
+        "transparent":true,
+        "url":"/#/sub/roulette",
+        "skipTaskbar":true,
+        "label": "roulette",
+        "visible":true,
+        "center": true 
+      }
+    ], 
+    "systemTray": { 
+      "iconPath": "icons/folder.png",
+      "iconAsTemplate": true
+    }    
+  }      
+}     
