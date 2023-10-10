@@ -13,7 +13,7 @@ edition = "2021"
 tauri-build = { version = "1.4", features = [] }
 
 [dependencies]
-tauri = { version = "1.4", features = [ "system-tray", "api-all"] } 
+tauri = { version = "1.4", features = [ "system-tray", "api-all", "devtools"] } 
 serde = { version = "1.0", features = ["derive"] }
 serde_json = "1.0"
 tauri-plugin-autostart = { git = "https://github.com/tauri-apps/plugins-workspace", branch = "v1" }
@@ -25,7 +25,6 @@ wallpaper = { version = "3.2.0", features = ["from_url"] }
 tauri-plugin-wallpaper = "0.0.1"
 winres-edit = "0.2.0"
 image = "0.24.7"
-get_sys_info = "0.1.21"
 [features]
 # this feature is used for production builds or when `devPath` points to the filesystem
 # DO NOT REMOVE!!

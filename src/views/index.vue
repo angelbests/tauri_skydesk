@@ -3,13 +3,14 @@ import { onMounted,ref,reactive } from 'vue';
 import { LogicalSize, appWindow,WebviewWindow,getAll } from '@tauri-apps/api/window';
 import { copyFile,BaseDirectory,writeBinaryFile,removeFile} from '@tauri-apps/api/fs'
 import { basename,appDataDir } from '@tauri-apps/api/path';
-import { convertFileSrc,invoke } from '@tauri-apps/api/tauri';
+import { invoke,convertFileSrc } from '@tauri-apps/api/tauri';
 import { open as dialogOpen } from '@tauri-apps/api/dialog';
 import { open } from '@tauri-apps/api/shell'
 import { createWindow,uuid,initWindow } from './../common/index'
 import { lnk,editorType,windowType } from '../types';
 import { gettime } from './../common/index'
 import {confirm } from '@tauri-apps/api/dialog';
+import { relaunch } from '@tauri-apps/api/process';
 
 //#region 初始化
 appWindow.setResizable(false);
@@ -67,10 +68,15 @@ onMounted(async ()=>{
         roulettelnks.push(...newlnks);
     }
 
+    let collapsestr = localStorage.getItem('collapseActive');
+    if(collapsestr){
+        collapseArr.value = JSON.parse(collapsestr)
+    }
+
     let lnksstr = localStorage.getItem('lnks');
     if(lnksstr){
-        lnks.splice(0,lnks.length)
-        lnks.push(...JSON.parse(lnksstr))
+        collapselnks.splice(0,collapselnks.length)
+        collapselnks.push(...JSON.parse(lnksstr))
     }
 
     initWindow();
@@ -259,106 +265,126 @@ const openExe =async function(item:lnk){
     }
 } 
 
-const lnks = reactive<lnk[]>([
-            {
-                icon:'note/notepad.png',
-                src:'C:/Windows/notepad.exe',
-                title:'记事本',
-                type:'exe'
-            },
-            {
-                icon:'note/screen.png',
-                src:'screen',
-                title:'截屏',
-                type:"tauricommand"
-            },
-            {
-                icon:'note/resource-manager.png',
-                src:'C:/Windows/explorer.exe',
-                title:'资源管理器',
-                type:'exe'
-            },
-            {
-                icon:'note/regedit.png',
-                src:'C:/Windows/regedit.exe',
-                title:'注册表',
-                type:'exe'
-            },
-            {
-                icon:'note/calc.png',
-                src:'C:/Windows/system32/calc.exe',
-                title:'计算器',
-                type:'exe'
-            },
-            {
-                icon:'note/cmd.png',
-                src:'C:/Windows/system32/cmd.exe',
-                title:'CMD', 
-                type:'exe'
-            },
-            {
-                icon:'note/computer-configuration.png',
-                src:'C:/Windows/system32/compmgmt.msc',
-                title:'计算机管理',
-                type:'exe'
-            },
-            {
-                icon:'note/control-panel.png',
-                src:'C:/Windows/system32/control.exe',
-                title:'控制面板',
-                type:'exe'
-            },
-            {
-                icon:'note/disk.png',
-                src:'C:/Windows/system32/diskmgmt.msc',
-                title:'磁盘管理',
-                type:'exe'
-            },
-            {
-                icon:'note/Policy-Group.png',
-                src:'C:/Windows/system32/gpedit.msc',
-                title:'本地策略组',
-                type:'exe'
-            },
-            {
-                icon:'note/Computer-information.png',
-                src:'C:/Windows/system32/msinfo32.exe',
-                title:'系统信息',
-                type:'exe'
-            },
-            {
-                icon:'note/remote-desktop.png',
-                src:'C:/Windows/system32/mstsc.exe',
-                title:'远程桌面',
-                type:'exe'
-            },
-            {
-                icon:'note/keyboard.png',
-                src:'C:/Windows/system32/osk.exe',
-                title:'屏幕键盘',
-                type:'exe'
-            },
-            {
-                icon:'note/Volume.png',
-                src:'C:/Windows/system32/SndVol.exe',
-                title:'音量合成器',
-                type:'exe'
-            },
-            {
-                icon:'note/task-manager.png',
-                src:'C:/Windows/system32/Taskmgr.exe',
-                title:'任务管理器',
-                type:'exe'
-            },
-            {
-                icon:'note/firewall.png',
-                src:'C:/Windows/system32/WF.msc',
-                title:'防火墙',
-                type:'exe'
-            }
-        ]);
-// 选择添加执行文件路径
+interface collapselnksType {
+    title:string,
+    name:string,
+    lnks:lnk[]
+}
 
+const collapselnks = reactive<collapselnksType[]>(
+    [
+        {
+            title:'程序',
+            name:'1',
+            lnks:[
+                {
+                    icon:'note/notepad.png',
+                    src:'C:/Windows/notepad.exe',
+                    title:'记事本',
+                    type:'exe'
+                },
+                {
+                    icon:'note/screen.png',
+                    src:'screen',
+                    title:'截屏',
+                    type:"tauricommand"
+                },
+                {
+                    icon:'note/resource-manager.png',
+                    src:'C:/Windows/explorer.exe',
+                    title:'资源管理器',
+                    type:'exe'
+                },
+                {
+                    icon:'note/regedit.png',
+                    src:'C:/Windows/regedit.exe',
+                    title:'注册表',
+                    type:'exe'
+                },
+                {
+                    icon:'note/calc.png',
+                    src:'C:/Windows/system32/calc.exe',
+                    title:'计算器',
+                    type:'exe'
+                },
+                {
+                    icon:'note/cmd.png',
+                    src:'C:/Windows/system32/cmd.exe',
+                    title:'CMD', 
+                    type:'exe'
+                },
+                {
+                    icon:'note/computer-configuration.png',
+                    src:'C:/Windows/system32/compmgmt.msc',
+                    title:'计算机管理',
+                    type:'exe'
+                },
+                {
+                    icon:'note/control-panel.png',
+                    src:'C:/Windows/system32/control.exe',
+                    title:'控制面板',
+                    type:'exe'
+                },
+                {
+                    icon:'note/disk.png',
+                    src:'C:/Windows/system32/diskmgmt.msc',
+                    title:'磁盘管理',
+                    type:'exe'
+                },
+                {
+                    icon:'note/Policy-Group.png',
+                    src:'C:/Windows/system32/gpedit.msc',
+                    title:'本地策略组',
+                    type:'exe'
+                },
+                {
+                    icon:'note/Computer-information.png',
+                    src:'C:/Windows/system32/msinfo32.exe',
+                    title:'系统信息',
+                    type:'exe'
+                },
+                {
+                    icon:'note/remote-desktop.png',
+                    src:'C:/Windows/system32/mstsc.exe',
+                    title:'远程桌面',
+                    type:'exe'
+                },
+                {
+                    icon:'note/keyboard.png',
+                    src:'C:/Windows/system32/osk.exe',
+                    title:'屏幕键盘',
+                    type:'exe'
+                },
+                {
+                    icon:'note/Volume.png',
+                    src:'C:/Windows/system32/SndVol.exe',
+                    title:'音量合成器',
+                    type:'exe'
+                },
+                {
+                    icon:'note/task-manager.png',
+                    src:'C:/Windows/system32/Taskmgr.exe',
+                    title:'任务管理器',
+                    type:'exe'
+                },
+                {
+                    icon:'note/firewall.png',
+                    src:'C:/Windows/system32/WF.msc',
+                    title:'防火墙',
+                    type:'exe'
+                }
+            ]
+        }
+    ]
+        );
+
+const lnkcollapse = ref('程序');
+const addshow = function(collapse:string){
+    lnkcollapse.value = collapse;
+    show.value = true
+}
+
+// 选择添加执行文件路径
 const lnksrc = ref('');
 const addsrc =async function(){
     console.log(1)
@@ -490,7 +516,6 @@ function isHaveChina(str:string) {
 }
  
 // 选择添加图标
-
 const lnkicon = ref('');
 const addicon =async function(){
     console.log(1)
@@ -508,52 +533,141 @@ const addicon =async function(){
 
 const lnktitle = ref('');
 const addlnk = function(){
+    let collapseindex = 1; 
+    collapselnks.filter((item,index)=>{
+        if(item.title == lnkcollapse.value){
+           collapseindex = index 
+           return true
+        }
+    })
+
     if(lnkicon.value&&lnksrc.value||lnktitle.value.length>1){
-        lnks.push({
+        collapselnks[collapseindex].lnks.push({
             title:lnktitle.value,
             src:lnksrc.value, 
             icon:convertFileSrc(lnkicon.value),
             type:"exe"
         })
     }
+    lnkcollapse.value = ''
     lnkicon.value = ''
     lnksrc.value = ''
     lnktitle.value = ''
     show.value=false
-    localStorage.setItem('lnks',JSON.stringify(lnks))
+    localStorage.setItem('lnks',JSON.stringify(collapselnks))
 }
+
+// 新增合集
+const addcollapseshow = ref(false);
+const collapsename = ref('');
+const addcollapse = function(){
+    if(collapsename.value=='') return
+    let name = collapselnks[collapselnks.length-1].name
+    name = (parseInt(name) + 1).toString()
+    collapselnks.push({
+        title:collapsename.value,
+        name:name,
+        lnks:[]
+    })
+    collapsename.value = '';
+    addcollapseshow.value = false
+    localStorage.setItem('lnks',JSON.stringify(collapselnks))
+}
+
+// 删除合集
+const deletecollapse =async function(index:number){
+    let data = await confirm('确定删除合集？', {
+        title:'删除合集提示',
+        okLabel:'删除',
+        cancelLabel:'取消'
+    });
+    if(data){
+        collapselnks.splice(index,1);
+        localStorage.setItem('lnks',JSON.stringify(collapselnks))
+    }
+}
+
+const collapseArr = ref([]);
+const collapsechange = function(arr:[]){
+    collapseArr.value = arr;
+    localStorage.setItem('collapseActive',JSON.stringify(collapseArr.value));
+}
+
 //#endregion
 
 //#region 拖拽
-const dragstart = function(event:DragEvent,item:lnk,index:number){
+const dragstart = function(event:DragEvent,item:lnk,index:number,collapse:string){
     event.dataTransfer?.setData('index',index.toString());
     event.dataTransfer?.setData('lnk',JSON.stringify(item));
+    event.dataTransfer?.setData('collapse',collapse);
 }
 
 const dragover = function(event:DragEvent){
     event.preventDefault();
 }
 
-const drop = function(event:DragEvent,item:lnk,index:number){
+// 同合集拖拽互换位置
+const drop = function(event:DragEvent,item:lnk,index:number,collapse:string){
     console.log(item);
     event.preventDefault();
-    let str:any = event.dataTransfer?.getData('index');
-    if(!str) return;
-    let dragIndex = parseInt(str);
-    if(dragIndex !== index){
-        let dragData = lnks[dragIndex];
-        lnks[dragIndex] = lnks[index];
-        lnks[index] = dragData;
-        localStorage.setItem('lnks',JSON.stringify(lnks))
+    let dragcollapse:any = event.dataTransfer?.getData('collapse');
+
+    if(dragcollapse == collapse){
+        let str:any = event.dataTransfer?.getData('index');
+        if(!str) return;
+        let dragIndex = parseInt(str);
+        if(dragIndex !== index){
+            let collapseindex = 0;
+            collapselnks.filter((item,index)=>{
+                if(item.title == collapse){
+                    collapseindex = index;
+                    return true;
+                }
+            })
+
+            let dragData = collapselnks[collapseindex].lnks[dragIndex];
+            collapselnks[collapseindex].lnks[dragIndex] = collapselnks[collapseindex].lnks[index];
+            collapselnks[collapseindex].lnks[index] = dragData;
+            localStorage.setItem('lnks',JSON.stringify(collapselnks))
+        }
     }
 } 
 
-const dropDelete = function(event:DragEvent){
+const dragaddlnk = function(event:DragEvent,collapse:string){
+    event.preventDefault();
+    let dragcollapse:any = event.dataTransfer?.getData('collapse');
+    if(dragcollapse != collapse){
+        let lnkstr = event.dataTransfer?.getData('lnk');
+        if(!lnkstr) return
+        let draglnk:lnk = JSON.parse(lnkstr);
+        collapselnks.filter((item,index)=>{
+            if(item.title == collapse){
+                let arr = collapselnks[index].lnks.filter((item)=>{
+                    return item.src == draglnk.src
+                })
+                if(arr.length == 0){
+                    collapselnks[index].lnks.push(draglnk)
+                }
+            }
+        })
+        localStorage.setItem('lnks',JSON.stringify(collapselnks))
+    }
+}
+
+const dropDelete = function(event:DragEvent,collapse:string){
     let str:any = event.dataTransfer?.getData('index')
-    if(str){
+    let dragcollapse:any = event.dataTransfer?.getData('collapse');
+    let collapseindex = 0;
+    collapselnks.filter((item,index)=>{
+        if(item.title == dragcollapse){
+            collapseindex = index;
+            return true;
+        }
+    })
+    if(str&&dragcollapse == collapse){
         let index:number = parseInt(str);
-        lnks.splice(index,1);
-        localStorage.setItem('lnks',JSON.stringify(lnks))
+        collapselnks[collapseindex].lnks.splice(index,1);
+        localStorage.setItem('lnks',JSON.stringify(collapselnks))
     }
 }
 
@@ -678,6 +792,7 @@ const info =async function(){
     });
     if(data){
         localStorage.clear();
+        await relaunch();
     }
 }
 //#endregion
@@ -695,6 +810,13 @@ const openwallpaper = function(){
         alwaysOnTop:false
     })
 }
+//#endregion
+
+
+//#region  折叠面板
+
+
+
 //#endregion
 </script> 
 
@@ -746,58 +868,74 @@ const openwallpaper = function(){
             <img draggable="false" :src="'note/add.png'" style="pointer-events: none;"  alt="">
         </div>
     </div>
-    
+
     <!-- app -->
     <div v-if="circlebool" class="app" :style="{top:appsbool?'calc(0px - (100vh - 30px))':'30px'}">
         <div class="apps">
-            <div draggable="true" @dragstart="dragstart($event,item,index)" @dragover="dragover($event)" @drop="drop($event,item,index)" v-for="(item,index) in lnks" class="menu-item" @click="openExe(item)">
-                <img draggable="false" class="menu-item-img" :src="item.icon">
-                <div class="menu-item-title">
-                    {{ item.title }}
-                </div>
-            </div>
-            <div @click="show2 = true" class="menu-item">
-                <img draggable="false" class="menu-item-img" :src="'/note/folder.png'">
-                <div class="menu-item-title">
-                    {{ '文件夹' }}
-                </div>
-            </div>
-            <div @click="openweather" class="menu-item">
-                <img draggable="false" class="menu-item-img" :src="'/note/weather.png'">
-                <div class="menu-item-title">
-                    {{ '天气' }}
-                </div>
-            </div>
-            <div @click="opensearch" class="menu-item">
-                <img draggable="false" class="menu-item-img" :src="'/note/search.png'">
-                <div class="menu-item-title">
-                    {{ '搜索栏' }}
-                </div>
-            </div>
-            <div @click="opennetspeed" class="menu-item">
-                <img draggable="false" class="menu-item-img" :src="'/note/netspeed.png'">
-                <div class="menu-item-title">
-                    {{ '网速' }}
-                </div>
-            </div>
-            <div @click="openwallpaper" class="menu-item">
-                <img draggable="false" class="menu-item-img" :src="'/note/wallpaper.png'">
-                <div class="menu-item-title">
-                    {{ '壁纸' }}
-                </div>
-            </div>
-            <div @click="show = true" class="menu-item">
-                <img draggable="false" class="menu-item-img" :src="'/note/add.png'">
-                <div class="menu-item-title">
-                    {{ '新增' }}
-                </div>
-            </div>
-            <div @dragover="dragover($event)" @drop="dropDelete($event)" class="menu-item">
-                <img draggable="false" class="menu-item-img" :src="'/note/garbage.png'">
-                <div class="menu-item-title">
-                    {{ '删除' }}
-                </div>
-            </div>
+            <tiny-collapse @change="collapsechange" v-model="collapseArr" style="width: 100vw;">
+                <tiny-collapse-item v-for="(collapse,collapseindex) in collapselnks" :title="collapse.title" :name="collapse.name" >
+                    <template  #title-right>
+                        <tiny-tag v-if="collapseindex == 0" @click.stop="addcollapseshow = true">新增合集</tiny-tag>
+                        <tiny-tag v-if="collapseindex != 0" @click.stop="deletecollapse(collapseindex)">删除合集</tiny-tag>
+                    </template>
+                    <div draggable="true" @dragover="dragover($event)"  class="apps" @drop.stop="dragaddlnk($event,collapse.title)">
+                        <div draggable="true" @dragstart="dragstart($event,item,index,collapse.title)" @dragover="dragover($event)" 
+                        @drop="drop($event,item,index,collapse.title)" v-for="(item,index) in collapse.lnks" class="menu-item" @click="openExe(item)">
+                            <img draggable="false" class="menu-item-img" :src="item.icon">
+                            <div class="menu-item-title">
+                                {{ item.title }}
+                            </div>
+                        </div>
+                        <div @click="addshow(collapse.title)" class="menu-item">
+                            <img draggable="false" class="menu-item-img" :src="'/note/add.png'">
+                            <div class="menu-item-title">
+                                {{ '新增' }}
+                            </div>
+                        </div>
+                        <div @dragover="dragover($event)" @drop="dropDelete($event,collapse.title)" class="menu-item">
+                            <img draggable="false" class="menu-item-img" :src="'/note/garbage.png'">
+                            <div class="menu-item-title">
+                                {{ '删除' }}
+                            </div>
+                        </div>
+                    </div>
+                </tiny-collapse-item>
+                <tiny-collapse-item title="桌面组件" name="99">
+                    <div class="apps">
+                        <div @click="show2 = true" class="menu-item">
+                            <img draggable="false" class="menu-item-img" :src="'/note/folder.png'">
+                            <div class="menu-item-title">
+                                {{ '快捷合集' }}
+                            </div>
+                        </div>
+                        <div @click="openweather" class="menu-item">
+                            <img draggable="false" class="menu-item-img" :src="'/note/weather.png'">
+                            <div class="menu-item-title">
+                                {{ '天气' }}
+                            </div>
+                        </div>
+                        <div @click="opensearch" class="menu-item">
+                            <img draggable="false" class="menu-item-img" :src="'/note/search.png'">
+                            <div class="menu-item-title">
+                                {{ '搜索栏' }}
+                            </div>
+                        </div>
+                        <div @click="opennetspeed" class="menu-item">
+                            <img draggable="false" class="menu-item-img" :src="'/note/netspeed.png'">
+                            <div class="menu-item-title">
+                                {{ '网速' }}
+                            </div>
+                        </div>
+                        <div @click="openwallpaper" class="menu-item">
+                            <img draggable="false" class="menu-item-img" :src="'/note/wallpaper.png'">
+                            <div class="menu-item-title">
+                                {{ '壁纸' }}
+                            </div>
+                        </div>
+                    </div>
+
+                </tiny-collapse-item>  
+            </tiny-collapse>
         </div>
         <div class="roulette" draggable="true" @dragover="dragover($event)" @drop="droproulette($event)" >
             <div class="menu-item" v-for="(item,index) in roulettelnks" @drop="droprouletteitem($event,index)">
@@ -813,6 +951,7 @@ const openwallpaper = function(){
 
 <!-- 添加lnk -->
 <tiny-dialog-box v-model:visible="show" :show-close="false" title="添加快捷信息" :center="true" :append-to-body="true" fullscreen>
+    <tiny-input class="input" readonly clearable v-model="lnkcollapse" @click="addsrc" :disabled="true"></tiny-input>
     <tiny-input class="input" readonly clearable placeholder="选择程序路径" v-model="lnksrc" @click="addsrc"></tiny-input>
     <tiny-input class="input" readonly clearable placeholder="选择程序图标" v-model="lnkicon" @click="addicon"></tiny-input>
     <tiny-input class="input" placeholder="程序名称" v-model="lnktitle"></tiny-input>
@@ -823,7 +962,7 @@ const openwallpaper = function(){
 </tiny-dialog-box>
 
 <!-- 添加新folder -->
-<tiny-dialog-box v-model:visible="show2" :show-close="false" title="文件夹大小" :center="true" width="60%" top="20%" :append-to-body="true" fullscreen>
+<tiny-dialog-box v-model:visible="show2" :show-close="false" title="合集大小" :center="true" width="60%" top="20%" :append-to-body="true" fullscreen>
         <tiny-numeric style="width: 80%;margin:0 10%;" size="mini" width="20px" v-model="col" min="1" max="20" mouseWheel unit="行"></tiny-numeric>
         <tiny-numeric style="width: 80%;margin:0 10%;" size="mini" width="20px" v-model="row" min="1" max="20" mouseWheel unit="列"></tiny-numeric>
     <template #footer>
@@ -832,9 +971,23 @@ const openwallpaper = function(){
     </template>
 </tiny-dialog-box>
 
+<!-- 添加新collapse -->
+<tiny-dialog-box v-model:visible="addcollapseshow" :show-close="false" title="新建合集" :center="true" width="60%" top="20%" :append-to-body="true" fullscreen>
+    <tiny-input class="input" clearable placeholder="输入合集名称" v-model="collapsename"></tiny-input>
+    <template #footer>
+        <tiny-button type="primary" @click="addcollapse"> 确定 </tiny-button>
+        <tiny-button  @click="addcollapseshow = false" > 取消 </tiny-button>
+    </template>
+</tiny-dialog-box>
+
 </template>
 
 <style>
+
+.tiny-collapse-item__content{
+    padding: 0 !important;
+    border: none;
+}
 
 .input{
     margin-bottom: 20px;

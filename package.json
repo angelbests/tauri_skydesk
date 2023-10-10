@@ -13,6 +13,7 @@
     "@opentiny/vue": "^3.10.0",
     "@opentiny/vue-alert": "^3.10.0",
     "@opentiny/vue-button": "^3.10.0",
+    "@opentiny/vue-icon": "^3.10.1",
     "@tauri-apps/api": "^1.4.0",
     "@wangeditor/editor": "^5.1.23",
     "@wangeditor/editor-for-vue": "^5.1.12",

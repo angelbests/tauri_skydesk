@@ -1133,10 +1133,10 @@
     "@opentiny/vue-radio" "~3.10.0"
     "@opentiny/vue-renderless" "~3.10.0"
 
-"@opentiny/vue-icon@~3.10.0":
-  version "3.10.0"
-  resolved "https://registry.npmjs.org/@opentiny/vue-icon/-/vue-icon-3.10.0.tgz"
-  integrity sha512-x/sR740iXejCGqz11QFBfhTKQmc0/blii54721Ak8ZUuc2eq11k5iDiev3escApqw4eaAVNYrHPfe2CiXOL7cA==
+"@opentiny/vue-icon@^3.10.1", "@opentiny/vue-icon@~3.10.0":
+  version "3.10.1"
+  resolved "https://registry.npmjs.org/@opentiny/vue-icon/-/vue-icon-3.10.1.tgz"
+  integrity sha512-8pgX81npG3Bhew9Rsh2iuqTtn92oDTfi6W5Fjf/BdxuctrslFEFmyEOcNeV6Nz4dnQUJwCGGUgV8AaAhBbWIzQ==
   dependencies:
     "@opentiny/vue-common" "~3.10.0"
     "@opentiny/vue-theme" "~3.10.0"
