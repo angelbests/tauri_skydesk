@@ -51,11 +51,14 @@ const getwallpaper =async function(){
     href = href + '&page='+page.value;
     const response:any = await fetch( href , {
         method: 'GET',
-        timeout: 1000,
+        timeout: 10000,
     });
     num.value = wallpapers.length;
+    if(response.data.data == undefined){
+        appWindow.close();
+    }
     wallpapers.push(...response.data.data);
-
+    console.log(wallpapers);
 }
 
 const savewallpaper =async function(path:string){

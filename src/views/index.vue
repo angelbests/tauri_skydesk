@@ -813,9 +813,20 @@ const openwallpaper = function(){
 //#endregion
 
 
-//#region  折叠面板
+//#region  sysinfo
 
-
+const opensysinfo = function(){
+    new WebviewWindow('sysinfo',{
+        title:"系统信息",
+        width:500,
+        height:500,
+        decorations:false,
+        transparent:true,
+        url:'/#/sub/sysinfo',
+        skipTaskbar:false,
+        alwaysOnTop:false
+    })
+}
 
 //#endregion
 </script> 
@@ -930,6 +941,12 @@ const openwallpaper = function(){
                             <img draggable="false" class="menu-item-img" :src="'/note/wallpaper.png'">
                             <div class="menu-item-title">
                                 {{ '壁纸' }}
+                            </div>
+                        </div>
+                        <div @click="opensysinfo" class="menu-item">
+                            <img draggable="false" class="menu-item-img" :src="'/note/wallpaper.png'">
+                            <div class="menu-item-title">
+                                {{ '系统信息' }}
                             </div>
                         </div>
                     </div>

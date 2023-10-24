@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { reactive,onMounted,ref } from 'vue'
+import { reactive,onMounted } from 'vue'
 import { listen} from '@tauri-apps/api/event'
 import rightMenu from '../../components/rightMenu.vue';
 import { appWindow,LogicalSize } from '@tauri-apps/api/window'
@@ -25,23 +25,21 @@ onMounted(async ()=>{
     getspeed();
 })
 
-const checkdata = ref('0/0');
-
 const getspeed =async function(){
-    
     await listen('netspeed',function(event:any){
-        let speedstr = event.payload.message.split(':')[1];
-        speedstr = speedstr.split(' ')[1];
-        if(checkdata.value != speedstr){
-            checkdata.value = speedstr
-            let received = Number(speedstr.split('/')[0]);
-            let transmitted = Number(speedstr.split('/')[1]);
-            speedshow.received = Math.floor(received/1024)>=1000?Number((received/1024/1024).toFixed(1)):Number((received/1024).toFixed(1))
-            speedshow.transmitted = Math.floor(transmitted/1000)>=1000?Number((transmitted/1024/1024).toFixed(1)):Number((transmitted/1024).toFixed(1))
-            speedshow.unit1 = Math.floor(received/1024)>=1000?'MB/s':'KB/s'
-            speedshow.unit2 = Math.floor(transmitted/1024)>=1000?'MB/s':'KB/s'
-            console.log(speedstr)
+        let  speedstr= event.payload.message.split('||||');
+        let received = 0;
+        let transmitted = 0;
+        for(let i = 0;i<speedstr.length-1;i++){
+            let str = speedstr[i].split(':')[1];
+            received = received + Number(str.split('/')[0]);
+            transmitted = transmitted + Number(str.split('/')[1]);
         }
+        console.log(received,transmitted);
+        speedshow.received = Math.floor(received/1024)>=1000?Number((received/1024/1024).toFixed(1)):Number((received/1024).toFixed(1))
+        speedshow.transmitted = Math.floor(transmitted/1000)>=1000?Number((transmitted/1024/1024).toFixed(1)):Number((transmitted/1024).toFixed(1))
+        speedshow.unit1 = Math.floor(received/1024)>=1000?'MB/s':'KB/s'
+        speedshow.unit2 = Math.floor(transmitted/1024)>=1000?'MB/s':'KB/s'
     })
 }
 </script>

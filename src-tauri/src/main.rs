@@ -152,22 +152,22 @@ fn systemtray()->SystemTray{
 }
 
 ////////////////////////////////////////////////////////////////////////////
-
+// 网速
 use std::{thread, time};
-use sysinfo::{NetworkExt, System, SystemExt};
+use sysinfo::{NetworkExt, System, SystemExt, NetworksExt, ProcessExt, DiskExt, CpuExt, UserExt};
 #[tauri::command]
 fn netspeed(window: Window){
   tauri::async_runtime::spawn(async move {
     let mut sys = System::new_all();
-    
+    let networks = sys.networks_mut();
     loop {
-      sys.refresh_networks();
-      let mut s= String::from(" ");
-      for (interface_name, data) in sys.networks() {
-        s = format!("{}: {}/{} B", interface_name, data.received(), data.transmitted());
+      networks.refresh_networks_list();
+      let mut arr:Vec<String> = Vec::new();
+      for (interface_name, data) in networks.iter() {
+        let s = format!("{}: {}/{} ||||", interface_name, data.received(), data.transmitted());
+        arr.push(s);
       }
-      // println!("{}",s);
-      window.emit("netspeed", Payload { message: s.into()}).unwrap();
+      window.emit("netspeed", Payload { message: arr.into_iter().collect()}).unwrap();
 
       let ten_millis = time::Duration::from_millis(1000);
       thread::sleep(ten_millis);
@@ -177,12 +177,103 @@ fn netspeed(window: Window){
 ////////////////////////////////////////////////////////////////////////////
 
 #[tauri::command]
-fn systeminfo(){
+fn systeminfo(window: Window){
+
+  tauri::async_runtime::spawn(async move {
+    let mut sys = System::new_all();
+
+    loop { 
+      sys.refresh_all();
   
+      // 磁盘信息
+      let mut arr:Vec<String> = Vec::new();
+      for disk in sys.disks() {
+        let s = format!("{{\"mount_point\":{:?},\"file_system\":{:?},\"kind\":{:?},\"total_space\":{:?},\"available_space\":{:?}}}",disk.mount_point(),disk.file_system(),disk.mount_point(),disk.total_space(),disk.available_space());
+        arr.push(s);
+      }
+      window.emit("disk", &arr).unwrap();
+    
+      // RAM 物理内存
+      let mut s = format!("{{\"totalmemory\":{:?},\"usedmemory\":{:?}}}",sys.total_memory(),sys.used_memory());
+      window.emit("memory", s).unwrap();
+
+      // swap 虚拟内存
+      s = format!("{{\"totalswap\":{:?},\"usedswap\":{:?}}}",sys.total_swap(),sys.used_swap());
+      window.emit("swap", s).unwrap();
+
+      // println!("{:?}",sys.global_cpu_info());
+      arr.clear();
+      for cpu in sys.cpus() {
+        s = format!("{{\"name\":{:?},\"usage\":{:?},\"vender\":{:?},\"brand\":{:?},\"frequery\":{:?}}}",cpu.name(),cpu.cpu_usage(),cpu.vendor_id(),cpu.brand(),cpu.frequency());
+        arr.push(s);
+      }
+      window.emit("cpu", &arr).unwrap();
+
+      //进程列表
+      arr.clear();
+      for (pid, process) in sys.processes() {
+          let mut parentpid = String::from("");
+          let mut userid =String::from("");
+          match process.parent() {
+              Some(pid)=>{
+                parentpid = pid.to_string();
+              },
+              _=>{}
+          }
+          match process.user_id() {
+            Some(user)=>{
+              userid = user.to_string();
+            },
+            _=>{}
+          }
+          s = format!("{{\"pid\":\"{:?}\",\"name\":\"{:?}\",\"cmd\":\"{:?}\",\"path\":\"{:?}\",\"runpath\":\"{:?}\",\"rootpath\":\"{:?}\",\"memory\":\"{:?}\",\"virtualmemory\":\"{:?}\",\"parentpid\":\"{:?}\",\"status\":\"{:?}\",\"starttime\":\"{:?}\",\"runtime\":\"{:?}\",\"cpu\":\"{:?}\",\"user\":\"{:?}\"}}", 
+          pid.to_string(),process.name(),process.cmd(),process.exe(),process.cwd(),process.root(),process.memory(),process.virtual_memory(),parentpid
+          ,process.status(),process.start_time(),process.run_time(),process.cpu_usage(),userid);
+          arr.push(s);
+      }
+      window.emit("process", &arr).unwrap();
+      
+      arr.clear();
+      for user in sys.users() {
+        s = format!("{{\"name\":\"{:?}\",\"id\":\"{:?}\"}}",user.name(),user.id().to_string());
+        arr.push(s);
+      }
+      window.emit("user", &arr).unwrap();
+
+      // 系统版本
+      let mut host_name = String::from("");
+      match sys.host_name() {
+          Some(ss) =>{
+            host_name = ss
+          },
+          _=>{}
+      }
+
+      let mut kernel_version = String::from("");
+      match sys.kernel_version() {
+          Some(ss)=>{
+            kernel_version = ss
+          },
+          _=>{}
+      }
+
+      match sys.long_os_version() {
+          Some(ss) =>{
+            let s = format!("{{\"version\":{:?}}}",ss+" "+&kernel_version+" "+&host_name);
+            window.emit("version", s).unwrap();
+          },
+          _=>{}
+      }
+
+      let ten_millis = time::Duration::from_millis(1000);
+      thread::sleep(ten_millis);
+    }
+
+  });
 }
 
 ////////////////////////////////////////////////////////////////////////////
-
+// 设置为背景桌面 
 #[tauri::command]
 fn setwallpaper(src:String){
     wallpaper::set_from_path(&src).unwrap();
@@ -191,6 +282,7 @@ fn setwallpaper(src:String){
 ////////////////////////////////////////////////////////////////////////////
 
 // C:\\Program Files (x86)\\NetEase\\CloudMusic\\cloudmusic.exe
+// 图表提取
 use winres_edit::{Resources,Id};
 use std::path::Path;
 use image::{guess_format,ImageFormat};
