@@ -9,9 +9,9 @@ import { open } from '@tauri-apps/api/shell'
 import { createWindow,uuid,initWindow } from './../common/index'
 import { lnk,editorType,windowType } from '../types';
 import { gettime } from './../common/index'
-import {confirm } from '@tauri-apps/api/dialog';
+import { confirm } from '@tauri-apps/api/dialog';
 import { relaunch } from '@tauri-apps/api/process';
-
+initWindow();
 //#region 初始化
 appWindow.setResizable(false);
 onMounted(async ()=>{
@@ -78,9 +78,6 @@ onMounted(async ()=>{
         collapselnks.splice(0,collapselnks.length)
         collapselnks.push(...JSON.parse(lnksstr))
     }
-
-    initWindow();
-
     // 监听缓存变动
     window.addEventListener('storage',function(e:StorageEvent){
         console.log(e)
@@ -214,13 +211,13 @@ const openeditor =async function(editor:{
                     opacity:editor.editor.opacity,
                     date:editor.editor.date,
                 }))
-            }
+            } 
         })
         localStorage.setItem('editorData',JSON.stringify(editorData))
     }else{
        await arr[0].setFocus()
-    }
-}
+    } 
+} 
 
 // 关闭窗口清理缓存和数据
 const closeeditor = function(editor:{
@@ -460,7 +457,7 @@ const addsrc =async function(){
                 let name = uuid() + '.ico';
                 await writeBinaryFile(name, new Uint8Array(header.concat(ico[j].data)), { dir: BaseDirectory.AppData });
                 console.log(width);
-                if(width>maxsize){
+                if(width>=maxsize){
                     maxsize = width;
                     iconame = name;
                 }
@@ -494,7 +491,7 @@ const addsrc =async function(){
                 await writeBinaryFile(name, new Uint8Array(header.concat(ico[z].data)), { dir: BaseDirectory.AppData });
                 // await writeBinaryFile(ico[z].name+'.ico', new Uint8Array(header.concat(ico[z].data)), { dir: BaseDirectory.AppData });
 
-                if (width>maxsize){
+                if (width>=maxsize){
                     maxsize = width;
                     iconame = name;
                 }
@@ -772,8 +769,8 @@ const droproulette = function(event:DragEvent){
  const opennetspeed = function(){
     createWindow('netspeed',{
         title:"netspeed",
-        width:90,
-        height:50,
+        width:85,
+        height:40,
         decorations:false,
         transparent:true,
         url:'/#/sub/netspeed',
@@ -815,19 +812,34 @@ const openwallpaper = function(){
 
 //#region  sysinfo
 
-const opensysinfo = function(){
-    new WebviewWindow('sysinfo',{
+// const opensysinfo = function(){
+//     new WebviewWindow('sysinfo',{
+//         title:"系统信息",
+//         width:500,
+//         height:500,
+//         decorations:false,
+//         transparent:true,
+//         url:'/#/sub/sysinfo',
+//         skipTaskbar:false,
+//         alwaysOnTop:false
+//     })
+// }
+
+//#endregion
+
+//#region
+const openprogram = function(){
+    new WebviewWindow('program',{
         title:"系统信息",
-        width:500,
-        height:500,
+        width:400, 
+        height:600,
         decorations:false,
         transparent:true,
-        url:'/#/sub/sysinfo',
+        url:'/#/sub/program',
         skipTaskbar:false,
-        alwaysOnTop:false
+        alwaysOnTop:false 
     })
 }
-
 //#endregion
 </script> 
 
@@ -842,6 +854,9 @@ const opensysinfo = function(){
                 <img :src="'bar/dog.png'" class="bar-img" alt="">
             </div>
             <div class="button" @click="appsbool=!appsbool" >
+                <img :src="'note/startMenu.png'" class="bar-img" alt="">
+            </div>
+            <div class="button" @click="openprogram" >
                 <img :src="'bar/apps.png'" class="bar-img" alt="">
             </div>
             <!-- <div class="button" @click="info">
@@ -943,12 +958,12 @@ const opensysinfo = function(){
                                 {{ '壁纸' }}
                             </div>
                         </div>
-                        <div @click="opensysinfo" class="menu-item">
+                        <!-- <div @click="opensysinfo" class="menu-item">
                             <img draggable="false" class="menu-item-img" :src="'/note/wallpaper.png'">
                             <div class="menu-item-title">
                                 {{ '系统信息' }}
                             </div>
-                        </div>
+                        </div> -->
                     </div>
 
                 </tiny-collapse-item>  
@@ -1083,7 +1098,7 @@ body{
 .menu-item-title{
     width: 100%;
     display: flex;
-    font-size:12px;
+    font-size:10px;
     justify-content: center;
     text-overflow: clip;
     white-space: nowrap;

@@ -1,7 +1,8 @@
 <script setup lang="ts">
 import { onMounted } from 'vue';
 import { createDir, BaseDirectory } from '@tauri-apps/api/fs';
-import { checkRun } from './common/index'
+import { checkRun } from './common/index';
+
 // import { Command } from '@tauri-apps/api/shell';
 // import { resourceDir } from '@tauri-apps/api/path';
 import { enable } from 'tauri-plugin-autostart-api'

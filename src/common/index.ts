@@ -9,7 +9,7 @@ export const uuid = function():string {
         let r = Math.random() * 16 | 0,
             v = c == 'x' ? r : (r & 0x3 | 0x8);
         return v.toString(16);
-    });
+    })+"-"+new Date().getTime();
 }
 
 // 创建窗口
@@ -132,4 +132,23 @@ export const hideRightMenu = function(){
             e.preventDefault()
         }
     )
+}
+
+
+import { readDir,FileEntry } from "@tauri-apps/api/fs";
+export const getLnk = async function(path="C:\\ProgramData\\Microsoft\\Windows\\Start Menu\\Programs"){
+    let lnks:FileEntry[] = []; 
+    let dir_arr =await readDir(path);
+    for(let i = 0;i<dir_arr.length;i++){
+        if(dir_arr[i].children != undefined){
+            let data = await readDir(dir_arr[i].path);
+            dir_arr.push(...data);
+        }else{
+            if((dir_arr[i].name as string).indexOf('lnk')>=0){
+                lnks.push(dir_arr[i]);
+            }
+        }
+    } 
+    console.log(lnks);
+    return lnks;
 }

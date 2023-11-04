@@ -25,6 +25,9 @@ wallpaper = { version = "3.2.0", features = ["from_url"] }
 tauri-plugin-wallpaper = "0.0.1"
 winres-edit = "0.2.0"
 image = "0.24.7"
+lnk = "0.5.1"
+lnk_parser = "0.4.0"
+parselnk = "0.1.1"
 [features]
 # this feature is used for production builds or when `devPath` points to the filesystem
 # DO NOT REMOVE!!

@@ -4,7 +4,7 @@ import { listen} from '@tauri-apps/api/event'
 import rightMenu from '../../components/rightMenu.vue';
 import { appWindow,LogicalSize } from '@tauri-apps/api/window'
 import { windowPosition,forbidSelect } from '../../common';
-appWindow.setSize(new LogicalSize(90,50))
+appWindow.setSize(new LogicalSize(85,50))
 appWindow.setResizable(false)
 appWindow.setAlwaysOnTop(true)
 windowPosition();
@@ -50,7 +50,7 @@ const getspeed =async function(){
         <div class="transmitted" data-tauri-drag-region>
             {{ speedshow.transmitted }}
         </div>
-        <div style="display: flex;width: 30px;" data-tauri-drag-region>
+        <div style="display: flex;width: 25px;" data-tauri-drag-region>
             {{ speedshow.unit2 }}
         </div>
     </div>
@@ -59,7 +59,7 @@ const getspeed =async function(){
         <div class="received" data-tauri-drag-region>
             {{ speedshow.received }}
         </div>
-        <div style="display: flex;width: 30px;" data-tauri-drag-region>
+        <div style="display: flex;width: 25px;" data-tauri-drag-region>
             {{ speedshow.unit1 }} 
         </div>
     </div>
@@ -81,6 +81,7 @@ html,body{
     padding: 10px 5px;
     box-sizing: border-box;
     display: flex;
+    align-items: center;
     color: yellow;
 }
 
@@ -88,14 +89,11 @@ html,body{
     text-align: right;
     height: 10px;
     width: 35px;
-    margin-right: 5px;
-    margin-bottom: 5px;
 }
 
 .transmitted{
-    width: 35px;
     text-align: right;
-    margin-right: 5px;
+    width: 35px;
     height: 10px;
 }
 </style>

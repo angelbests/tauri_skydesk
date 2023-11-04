@@ -14,7 +14,7 @@
     "@opentiny/vue-alert": "^3.10.0",
     "@opentiny/vue-button": "^3.10.0",
     "@opentiny/vue-icon": "^3.10.1",
-    "@tauri-apps/api": "^1.4.0",
+    "@tauri-apps/api": "^1.5.1",
     "@wangeditor/editor": "^5.1.23",
     "@wangeditor/editor-for-vue": "^5.1.12",
     "axios": "^1.4.0",
@@ -28,7 +28,7 @@
     "yarn": "^1.22.19"
   },
   "devDependencies": {
-    "@tauri-apps/cli": "^1.4.0",
+    "@tauri-apps/cli": "^1.5.6",
     "@vitejs/plugin-vue": "^4.2.3",
     "typescript": "^5.0.2",
     "vite": "^4.4.4",

@@ -1,6 +1,5 @@
 
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
-
 use tauri::SystemTrayEvent;
 use tauri::{Manager, Window};
 use tauri_plugin_autostart::MacosLauncher;
@@ -38,7 +37,7 @@ fn wheelclick(window: Window){
       println!("Error: {:?}", error);
     }else{
       // window.emit("event-name", Payload { message: "Tauri is awesome!".into() }).unwrap();
-    }
+    } 
   });
 }
 
@@ -124,7 +123,7 @@ fn main() {
               }
               _ => {}
         })
-        .invoke_handler(tauri::generate_handler![wheelclick,netspeed,screen,setwallpaper,geticon,systeminfo])
+        .invoke_handler(tauri::generate_handler![wheelclick,netspeed,screen,setwallpaper,geticon,systeminfo,getlnk,getlnk2])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
 }
@@ -151,6 +150,109 @@ fn systemtray()->SystemTray{
     return tray;
 }
 
+/////////////////////////////////////////////////////////////
+/// 获取lnk文件关联的exe文件路径
+// #[tauri::command]
+// fn getlnk(path:String)->String{
+//   println!("{:?}",path);
+//   let shortcut = lnk::ShellLink::open(path.clone()).unwrap();
+//   let mut ico_location = String::from("");
+//   let mut local_base_path = String::from("");
+//   if let Some(icolocation) = shortcut.icon_location() {
+//     ico_location = icolocation.to_string();
+//   }
+//   if let Some(linkinfo) = shortcut.link_info() {
+//     if let Some(exepath) = linkinfo.local_base_path() {
+//       local_base_path = exepath.to_string();
+//     }
+//   }
+//   return format!("{{\"ico_location\":{:?},\"local_base_path\":{:?}}}",ico_location,local_base_path);
+//   // return  String::from("value");
+// }
+
+#[tauri::command]
+fn getlnk(path:String)->String{
+  println!("{:?}",path);
+  let shortcut = lnk::ShellLink::open(path.clone()).unwrap();
+  let mut ico_location = String::from("");
+  let mut local_base_path = String::from("");
+  if let Some(icolocation) = shortcut.icon_location() {
+    ico_location = icolocation.to_string();
+  }
+  if let Some(linkinfo) = shortcut.link_info() {
+    if let Some(exepath) = linkinfo.local_base_path() {
+      local_base_path = exepath.to_string();
+    }
+  }
+  return format!("{{\"ico_location\":{:?},\"local_base_path\":{:?}}}",ico_location,local_base_path);
+}
+
+
+use lnk_parser::LNKParser;
+#[tauri::command]
+fn getlnk2(path:String)->String{
+   println!("{:?}",path);
+  let mut target_full_path = String::from("");
+  let mut ico_location = String::from("");
+  let mut local_base_path = String::from("");
+  let lnk_file = LNKParser::from_path(&path);
+  match lnk_file {
+      Ok(lnkfile) =>{
+        if let Some(targetfullpath) = lnkfile.get_target_full_path() {
+           println!("exe:{:?}",targetfullpath);
+          target_full_path = targetfullpath.to_string();
+        }
+        if let Some(icolocation) = lnkfile.get_icon_location() {
+           println!("ico:{:?}",icolocation.string);
+          ico_location = icolocation.string.to_string()
+        }
+        if let Some(linkinfo) = lnkfile.get_link_info() {
+          if let Some(localbasepath) = &linkinfo.local_base_path {
+            local_base_path = localbasepath.to_string();
+            println!("exe2:{:?}",localbasepath);
+          }
+        }
+      },
+      Err(ref e) => {
+        println!("{:?}",e);
+      }
+  }
+  return format!("{{\"ico_location\":{:?},\"local_base_path\":{:?},\"target_full_path\":{:?}}}",ico_location,local_base_path,target_full_path);
+}
+
+
+// use parselnk::Lnk;
+// use std::fs::File;
+// #[tauri::command]
+// fn getlnk3(path:String)->String{
+//   let mut file = File::open(path).unwrap();
+//   let mut str = String::from("");
+
+//   let mut ico_location = String::from("");
+//   let mut local_base_path = String::from("");
+//   match Lnk::new(&mut file) {
+//       Ok(lnk) =>{
+//         if let Some(localbasepath) = lnk.link_info.local_base_path {
+//           local_base_path = localbasepath;
+//           println!("1:{:?}",local_base_path);
+//         }
+
+//         if let Some(icolocation) = lnk.string_data.icon_location {
+//           ico_location = format!("{:?}",icolocation);
+//           println!("2:{:?}",ico_location);
+//         }
+//         // println!("1:{:?}",lnk.link_info.local_base_path);
+//         // println!("2:{:?}",lnk.string_data.icon_location);
+//         str = format!("{{\"ico_location\":{:?},\"local_base_path\":{:?}}}",ico_location,local_base_path);
+//         println!("{:?}",str);
+//       },
+//       Err(ref e) => {
+//         println!("{:?}",e);
+//       }
+//   }
+
+//   return str;
+// }
 ////////////////////////////////////////////////////////////////////////////
 // 网速
 use std::{thread, time};

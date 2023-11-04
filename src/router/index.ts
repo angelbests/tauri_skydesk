@@ -44,6 +44,10 @@ const routes = [
                 path:'wallpaper',
                 component:()=>import('./../views/page/wallpaper.vue')
             },
+            {
+                path:'program',
+                component:()=>import('./../views/page/program.vue')
+            },
         ]
     }
 ]
