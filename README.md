@@ -6,3 +6,6 @@ npm install
 npm run tauri dev
 ```
 仅用于学习交流使用，不可用于其它！
+
+功能预览
+![输入图片说明](image.png)
