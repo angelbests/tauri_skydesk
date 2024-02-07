@@ -62,24 +62,19 @@ const getwallpaper = async function (page: number) {
 
 const savewallpaper = async function (path: string) {
   let filename = await basename(path);
-  wallpaper.downloadsrc = (await appDataDir()) + "wallpaper\\" + filename;
-  let bool = await exists(wallpaper.downloadsrc);
-  if (!bool) {
-    let response: any = await fetch(path, {
-      method: "GET",
-      timeout: 1000,
-      headers: {
-        ContentType: "application/octet-stream",
-      },
-      responseType: ResponseType.Binary,
-    });
-    await writeBinaryFile(
-      "skydesk\\" + filename,
-      new Uint8Array(response.data),
-      { dir: BaseDirectory.Picture }
-    );
-  }
-  wallpaper.httpsrc = convertFileSrc(wallpaper.downloadsrc);
+  let response: any = await fetch(path, {
+    method: "GET",
+    timeout: 1000,
+    headers: {
+      ContentType: "application/octet-stream",
+    },
+    responseType: ResponseType.Binary,
+  });
+  await writeBinaryFile(
+    "skydesk\\" + filename,
+    new Uint8Array(response.data),
+    { dir: BaseDirectory.Picture }
+  );
   return true;
 };
 
@@ -100,13 +95,15 @@ const setwallpaper = async function (item: wallpaperType) {
 const downloadimg = async function () {
   await setting();
   for (let i = 0; i < wallpapers.length; i++) {
-    console.log("start");
+    console.log("start",wallpapers[i].path);
     let filename = await basename(wallpapers[i].path as string);
     let bool = await exists("skydesk\\" + filename, {
       dir: BaseDirectory.Picture,
     });
+    console.log(bool,filename)
     if (!bool) {
       await savewallpaper(wallpapers[i].path as string);
+      console.log("download")
     }
     console.log("end");
   }
