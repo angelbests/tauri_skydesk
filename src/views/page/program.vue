@@ -1,7 +1,7 @@
 <script lang="ts" setup>
 import { onMounted,reactive,ref} from 'vue';
 import { getLnk,uuid } from "./../../common/index"
-import { writeBinaryFile,BaseDirectory,copyFile,removeFile,FileEntry  } from "@tauri-apps/api/fs"
+import { writeBinaryFile,BaseDirectory,copyFile,removeFile,FileEntry,exists  } from "@tauri-apps/api/fs"
 import { appDataDir,basename } from '@tauri-apps/api/path'
 import { invoke,convertFileSrc } from '@tauri-apps/api/tauri'
 import rightMenu from './../../components/rightMenu.vue'
@@ -34,11 +34,14 @@ onMounted(async()=>{
             }
             let filename =await basename(data[i].path);
             let iconsrc:string =await addsrc(exesrc) as string;
-            icons.push({
-                name:filename.split('.')[0],
-                ico:iconsrc == './note/exe.png'?'./note/exe.png':convertFileSrc(iconsrc),
-                path:exesrc
-            }); 
+            if(iconsrc){
+                icons.push({
+                    name:filename.split('.')[0],
+                    ico:iconsrc == './note/exe.png'?'./note/exe.png':convertFileSrc(iconsrc),
+                    path:exesrc
+                }); 
+            }
+
         }
     }
     load.value.close();
@@ -57,10 +60,18 @@ const addsrc =async function(path:string){
         await copyFile(path,filename,{ dir:BaseDirectory.AppData })
 
         let filesrc =  await appDataDir()+filename;
-        arr = await invoke("geticon",{path:filesrc});
-         await removeFile(filesrc);
+        if(await exists(filesrc)){
+            arr = await invoke("geticon",{path:filesrc});
+            await removeFile(filesrc);
+        }else{
+            return '';
+        }
     }else{
-        arr = await invoke("geticon",{path:path});
+        if(await exists(path)){
+            arr = await invoke("geticon",{path:path});
+        }else{
+            return '';
+        }
     }  
 
     let group_icon = arr[0];

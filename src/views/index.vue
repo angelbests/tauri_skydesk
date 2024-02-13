@@ -856,9 +856,9 @@ const openprogram = function(){
             <div class="button" @click="appsbool=!appsbool" >
                 <img :src="'note/startMenu.png'" class="bar-img" alt="">
             </div>
-            <!-- <div class="button" @click="openprogram" >
+            <div class="button" @click="openprogram" >
                 <img :src="'bar/apps.png'" class="bar-img" alt="">
-            </div> -->
+            </div>
             <!-- <div class="button" @click="info">
                 <img :src="'icon/setting2.png'" class="bar-img" >
             </div>  -->

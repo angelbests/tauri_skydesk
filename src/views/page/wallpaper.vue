@@ -4,24 +4,21 @@ import rightMenu from "../../components/rightMenu.vue";
 import { onMounted, reactive, ref, watch } from "vue";
 import { wallpaperType } from "./../../types";
 import { hideRightMenu, forbidSelect } from "./../../common/index";
-import { invoke, convertFileSrc } from "@tauri-apps/api/tauri";
+import { invoke } from "@tauri-apps/api/tauri";
 import { fetch, ResponseType } from "@tauri-apps/api/http";
+import waterfall from "../../components/waterFall.vue";
 import {
   writeBinaryFile,
   BaseDirectory,
   createDir,
   exists,
 } from "@tauri-apps/api/fs";
-import { pictureDir, appDataDir, basename } from "@tauri-apps/api/path";
+import { pictureDir,  basename } from "@tauri-apps/api/path";
 hideRightMenu();
 forbidSelect();
 appWindow.setSize(new LogicalSize(1000, 600));
 appWindow.setResizable(false);
 const wallpapers = reactive<wallpaperType[]>([]);
-const wallpaper = reactive({
-  downloadsrc: "",
-  httpsrc: "./wallpaper/a.jpg",
-});
 
 onMounted(async () => {
   // 创建用户图片文件夹
@@ -266,7 +263,8 @@ import { IconDownload, IconCustom } from "@opentiny/vue-icon";
 </script>
 
 <template>
-  <div class="wallpapers-div">
+  <!-- <waterfall style="width: 100vw;height: 100vh;"></waterfall> -->
+  <div v-if="true" class="wallpapers-div">
     <div class="wallpapers">
       <div
         :style="{
