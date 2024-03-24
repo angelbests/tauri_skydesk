@@ -190,7 +190,7 @@ fn getlnk(path:String)->String{
 
 use lnk_parser::LNKParser;
 #[tauri::command]
-fn getlnk2(path:String)->String{
+async fn getlnk2(path:String)->String{
    println!("{:?}",path);
   let mut target_full_path = String::from("");
   let mut ico_location = String::from("");

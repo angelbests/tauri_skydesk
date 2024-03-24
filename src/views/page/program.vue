@@ -2,22 +2,22 @@
 import { onMounted,reactive,ref} from 'vue';
 import { getLnk,uuid } from "./../../common/index"
 import { writeBinaryFile,BaseDirectory,copyFile,removeFile,FileEntry,exists  } from "@tauri-apps/api/fs"
-import { appDataDir,basename } from '@tauri-apps/api/path'
+import { appDataDir,basename,dataDir} from '@tauri-apps/api/path'
 import { invoke,convertFileSrc } from '@tauri-apps/api/tauri'
 import rightMenu from './../../components/rightMenu.vue'
 import { forbidSelect } from "./../../common/index"
 import { Loading } from '@opentiny/vue';
 forbidSelect();
-
 const load:any = ref(0);
 onMounted(async()=>{
     load.value = Loading.service({
-        text:'加载程序文件中...',
+        text:'扫描程序文件中...',
         background: 'rgba(0, 0, 0, 0.3)',
-        size:'large'
+        size:'large',
+        target:document.getElementById('lnks-container')
     })
     let data1 = await getLnk();
-    let data2 = await getLnk("C:\\Users\\angel\\AppData\\Roaming\\Microsoft\\Windows\\Start Menu\\Programs");
+    let data2 = await getLnk(await dataDir()+"Microsoft\\Windows\\Start Menu\\Programs");
     data.push(...data1,...data2);
     for(let i = 0;i<data.length;i++){
         if(data[i].path.indexOf("Windows PowerShell")>=0){
@@ -49,7 +49,7 @@ onMounted(async()=>{
 const icons:{
     name:string,
     ico:string,
-    path:string
+    path:string,
 }[] = reactive([]);
 const data:FileEntry[] =reactive([])
 const addsrc =async function(path:string){
@@ -215,7 +215,7 @@ const close = function(){
         <img :src="'bar/close.png'" style="width: 20px;height: 20px;">
     </div>
 </div>
-<div class="lnks-container">
+<div class="lnks-container" id="lnks-container">
     <div class="lnk-scroll">
         <div v-for="item in icons" draggable="true" @dragover="dragover($event)" @dragstart="dragstart($event,item.name,item.ico,item.path)" class="lnk">
             <div class="lnk-ico">
@@ -227,7 +227,7 @@ const close = function(){
         </div>
     </div>
 </div>
-<right-menu :border-radius="'0'"></right-menu>
+<right-menu :border-radius="'0'" :zindex="9999"></right-menu>
 </template>
 
 <style>

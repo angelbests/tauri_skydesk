@@ -3,7 +3,8 @@ import { ref,onMounted } from 'vue'
 import { appWindow } from '@tauri-apps/api/window'
 
 export interface Props {
-    borderRadius?: string
+    borderRadius?: string,
+    zindex?:number
 }
 const props = withDefaults(defineProps<Props>(), {
     borderRadius: '20px',
@@ -49,7 +50,7 @@ const close = function(){
 </script>
 
 <template>
-    <div v-show="show" :style="{'borderRadius':borderRadius}" class="rightmenu" data-tauri-drag-region>
+    <div v-show="show" :style="{'borderRadius':borderRadius,zIndex:zindex}" class="rightmenu" data-tauri-drag-region>
         <slot></slot>
         <img draggable="false" class="rightmenu-img" :src="top?'icon/topping.png':'icon/down.png'" @click="topToggle">
         <img draggable="false" class="rightmenu-img" :src="'icon/close.png'" @click="close">
