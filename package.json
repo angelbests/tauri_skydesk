@@ -7,7 +7,8 @@
     "dev": "vite",
     "build": "vite build",
     "preview": "vite preview",
-    "tauri": "tauri"
+    "tauri": "tauri",
+    "pubhome":"tauri build"
   },
   "dependencies": {
     "@opentiny/vue": "^3.10.0",
