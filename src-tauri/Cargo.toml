@@ -22,7 +22,6 @@ sysinfo = "0.29.10"
 screenshots = "0.8.2"
 tauri-plugin-clipboard = "0.3.0"
 wallpaper = { version = "3.2.0", features = ["from_url"] }
-tauri-plugin-wallpaper = "0.0.1"
 winres-edit = "0.2.0"
 image = "0.24.7"
 lnk = "0.5.1"

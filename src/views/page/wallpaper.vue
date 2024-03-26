@@ -6,7 +6,6 @@ import { wallpaperType } from "./../../types";
 import { hideRightMenu, forbidSelect } from "./../../common/index";
 import { invoke } from "@tauri-apps/api/tauri";
 import { fetch, ResponseType } from "@tauri-apps/api/http";
-import waterfall from "../../components/waterFall.vue";
 import {
   writeBinaryFile,
   BaseDirectory,
