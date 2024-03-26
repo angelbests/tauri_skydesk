@@ -4,7 +4,6 @@ use tauri::SystemTrayEvent;
 use tauri::{Manager, Window};
 use tauri_plugin_autostart::MacosLauncher;
 use tauri_plugin_clipboard;
-use tauri_plugin_wallpaper::Wallpaper;
 
 ////////////////////////////////////////////////////////////////////////////
 #[derive(Clone, serde::Serialize)]
@@ -76,7 +75,6 @@ fn main() {
         // })
         .plugin(tauri_plugin_autostart::init(MacosLauncher::LaunchAgent, Some(vec!["--flag1", "--flag2"])))
         .plugin(tauri_plugin_clipboard::init())
-        .plugin(Wallpaper::init())
         .system_tray(systemtray())
         .on_system_tray_event(|app,event| match event {
             SystemTrayEvent::LeftClick {

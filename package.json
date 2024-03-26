@@ -23,7 +23,6 @@
     "qweather-icons": "^1.4.0",
     "tauri-plugin-autostart-api": "https://github.com/tauri-apps/tauri-plugin-autostart#v1",
     "tauri-plugin-clipboard-api": "^0.3.0",
-    "tauri-plugin-wallpaper": "^0.0.1",
     "vue": "^3.3.4",
     "vue-router": "^4.2.4",
     "yarn": "^1.22.19"
