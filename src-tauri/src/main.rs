@@ -1,17 +1,15 @@
 
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
-use tauri::SystemTrayEvent;
-use tauri::{Manager, Window};
 use tauri_plugin_autostart::MacosLauncher;
-use tauri_plugin_clipboard;
-
+use tauri::{CustomMenuItem, SystemTrayMenu, SystemTrayMenuItem,SystemTray,Manager, Window,SystemTrayEvent};
+use rdev::{grab, Event, EventType,Button,simulate, Key, SimulateError,};
 ////////////////////////////////////////////////////////////////////////////
 #[derive(Clone, serde::Serialize)]
 struct Payload {
   message: String,
 }
 
-use rdev::{grab, Event, EventType,Button,simulate, Key, SimulateError,};
+
 #[tauri::command]
 fn wheelclick(window: Window){
   tauri::async_runtime::spawn(async move {
@@ -43,11 +41,12 @@ fn wheelclick(window: Window){
 ////////////////////////////////////////////////////////////////////////////
 #[tauri::command]
 fn screen(){
-    send(&EventType::KeyPress(Key::PrintScreen));
-    send(&EventType::KeyRelease(Key::PrintScreen));
+  send(&EventType::KeyPress(Key::PrintScreen));
+  send(&EventType::KeyRelease(Key::PrintScreen));
 }
 
 fn send(event_type: &EventType) {
+  use std::{thread, time};
   let delay = time::Duration::from_millis(20);
   match simulate(event_type) {
       Ok(()) => (),
@@ -128,8 +127,7 @@ fn main() {
 
 ////////////////////////////////////////////////////////////////////////////
 
-use tauri::SystemTray;
-use tauri::{CustomMenuItem, SystemTrayMenu, SystemTrayMenuItem};
+
 fn systemtray()->SystemTray{
     // 创建菜单项
     let quit = CustomMenuItem::new("quit".to_string(), "退出");
@@ -186,10 +184,10 @@ fn getlnk(path:String)->String{
 }
 
 
-use lnk_parser::LNKParser;
+
 #[tauri::command]
 async fn getlnk2(path:String)->String{
-   println!("{:?}",path);
+  use lnk_parser::LNKParser;
   let mut target_full_path = String::from("");
   let mut ico_location = String::from("");
   let mut local_base_path = String::from("");
@@ -253,10 +251,11 @@ async fn getlnk2(path:String)->String{
 // }
 ////////////////////////////////////////////////////////////////////////////
 // 网速
-use std::{thread, time};
-use sysinfo::{NetworkExt, System, SystemExt, NetworksExt, ProcessExt, DiskExt, CpuExt, UserExt};
+
 #[tauri::command]
 fn netspeed(window: Window){
+  use std::{thread, time};
+  use sysinfo::{NetworkExt, System, SystemExt, NetworksExt};
   tauri::async_runtime::spawn(async move {
     let mut sys = System::new_all();
     let networks = sys.networks_mut();
@@ -278,7 +277,8 @@ fn netspeed(window: Window){
 
 #[tauri::command]
 fn systeminfo(window: Window){
-
+  use std::{thread, time};
+  use sysinfo::{System, SystemExt,ProcessExt, DiskExt, CpuExt, UserExt};
   tauri::async_runtime::spawn(async move {
     let mut sys = System::new_all();
 
@@ -382,12 +382,14 @@ fn setwallpaper(src:String){
 ////////////////////////////////////////////////////////////////////////////
 
 // C:\\Program Files (x86)\\NetEase\\CloudMusic\\cloudmusic.exe
-// 图表提取
-use winres_edit::{Resources,Id};
-use std::path::Path;
-use image::{guess_format,ImageFormat};
+// 图标提取
+#[cfg(any(windows))]
+
 #[tauri::command] 
 fn geticon(path:String)->Vec<Vec<String>>{
+    use winres_edit::{Resources,Id};
+    use std::path::Path;
+    use image::{guess_format,ImageFormat};
     let mut arr = Vec::new();
     let mut group_icon = Vec::new();
     let mut ico = Vec::new();
