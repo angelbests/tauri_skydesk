@@ -74,6 +74,10 @@ const addsrc =async function(path:string){
         }
     }  
 
+    if(arr.length == 0){
+        return "";
+    }
+
     let group_icon = arr[0];
     let ico = arr[1];
     for(let i=0;i<group_icon.length;i++){

@@ -2403,7 +2403,7 @@
     "@opentiny/vue-year-range" "~3.10.0"
     "@opentiny/vue-year-table" "~3.10.0"
 
-"@tauri-apps/api@^1.0.0", "@tauri-apps/api@^1.5.1", "@tauri-apps/api@>=1.0.0":
+"@tauri-apps/api@^1.0.0", "@tauri-apps/api@^1.5.1":
   version "1.5.1"
   resolved "https://registry.npmjs.org/@tauri-apps/api/-/api-1.5.1.tgz"
   integrity sha512-6unsZDOdlXTmauU3NhWhn+Cx0rODV+rvNvTdvolE5Kls5ybA6cqndQENDt1+FS0tF7ozCP66jwWoH6a5h90BrA==
@@ -3177,11 +3177,6 @@ tauri-plugin-clipboard-api@^0.3.0:
   dependencies:
     "@tauri-apps/api" "^1.0.0"
     tslib "^2.1.0"
-
-tauri-plugin-wallpaper@^0.0.1:
-  version "0.0.1"
-  resolved "https://registry.npmmirror.com/tauri-plugin-wallpaper/-/tauri-plugin-wallpaper-0.0.1.tgz"
-  integrity sha512-AmgcLbFYaeqwq0atv68XGrxa+AIt11f9iFQkdJyr+E48NaNc4tyv6TBQdV9/1/wf1+5PcWG9nF2r5Qx9xoFwTw==
 
 tiny-warning@^1.0.3:
   version "1.0.3"

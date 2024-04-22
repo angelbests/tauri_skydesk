@@ -394,9 +394,12 @@ fn geticon(path:String)->Vec<Vec<String>>{
     let mut group_icon = Vec::new();
     let mut ico = Vec::new();
     let mut resources = Resources::new(&Path::new(&path));
-    resources.load().expect("Unable to load resources");
+    let bool  = resources.load().is_err();
+    // resources.load().expect("Unable to load resources");
+    if bool {
+      return arr;
+    }
     resources.open().expect("Unable to open resource file for updates");
-
     for i in 1..500 {
       let a  = resources.find(Id::Integer(14),Id::Integer(i));
       match a {
