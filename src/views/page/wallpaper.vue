@@ -43,6 +43,7 @@ const getwallpaper = async function (page: number) {
   if (resolutions_value.value != "") {
     href = href + "&resolutions=" + resolutions_value.value;
   }
+  href = href + "&q=" + keyword.value;
   href = href + "&page=" + page;
   const response: any = await fetch(href, {
     method: "GET",
@@ -258,6 +259,7 @@ const showsetting = function () {
   );
   body.dispatchEvent(evObj);
 };
+const keyword = ref("");
 import { IconDownload, IconCustom } from "@opentiny/vue-icon";
 </script>
 
@@ -343,6 +345,10 @@ import { IconDownload, IconCustom } from "@opentiny/vue-icon";
         :data="resolutions"
         v-model="resolutions_value"
       ></tiny-button-group>
+    </div>
+    <div class="groupbtn">
+      <div class="groupbtntitle">关键词</div>
+      <tiny-input type="text" v-model="keyword"></tiny-input>
     </div>
     <div class="groupbtn">
       <div class="groupbtntitle">查询页数</div>
