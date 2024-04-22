@@ -348,7 +348,9 @@ import { IconDownload, IconCustom } from "@opentiny/vue-icon";
     </div>
     <div class="groupbtn">
       <div class="groupbtntitle">关键词</div>
-      <tiny-input type="text" v-model="keyword"></tiny-input>
+      <div style="width: calc(100% - 160px);">
+        <tiny-input  type="text" v-model="keyword"></tiny-input>
+      </div>
     </div>
     <div class="groupbtn">
       <div class="groupbtntitle">查询页数</div>
@@ -400,7 +402,7 @@ import { IconDownload, IconCustom } from "@opentiny/vue-icon";
 }
 .groupbtn {
   display: flex;
-  width: 100vw;
+  width: 100%;
   box-sizing: border-box;
   padding: 10px;
 }
@@ -420,8 +422,8 @@ import { IconDownload, IconCustom } from "@opentiny/vue-icon";
   z-index: 200;
   top: 0px;
   left: 0px;
-  width: 100vw;
-  height: 100vh;
+  width: 100%;
+  height: 100%;
   background: rgba(230, 230, 230, 0.5);
   border-radius: 15px;
   display: flex;
